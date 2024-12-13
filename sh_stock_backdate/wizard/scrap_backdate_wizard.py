@@ -56,15 +56,15 @@ class ScrapBackdateWizard(models.TransientModel):
 
                 stock_moves = self.env['stock.move'].search(['|',('scrap_id','=',stock_scrap.id),('origin','=',stock_scrap.name)])
                 
-                if self._check_account_installed():
+                # if self._check_account_installed():
 
-                    account_moves = self.env['account.move'].search([('stock_move_id','in',stock_moves.ids)])
-                    
-                    for account_move in account_moves:
-                        account_move.button_draft()
-                        account_move.name = False
-                        account_move.date = self.date_done
-                        account_move.action_post()
+                    # account_moves = self.env['account.move'].search([('stock_move_id','in',stock_moves.ids)])
+                    #
+                    # for account_move in account_moves:
+                    #     account_move.button_draft()
+                    #     account_move.name = False
+                    #     account_move.date = self.date_done
+                    #     account_move.action_post()
 
                 for move in stock_moves:
                     move.date = self.date_done
