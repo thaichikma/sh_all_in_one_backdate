@@ -1,6 +1,6 @@
 from odoo import models, fields, api, _
 from datetime import date,datetime
-from .exceptions import AccessError, MissingError, ValidationError, UserError
+from odoo.exceptions import AccessError, MissingError, ValidationError, UserError
 
 
 class AccountMove(models.Model):
