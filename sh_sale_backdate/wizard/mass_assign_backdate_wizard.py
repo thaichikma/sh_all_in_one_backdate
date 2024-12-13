@@ -14,7 +14,7 @@ class BackdateWizard(models.TransientModel):
     date_order = fields.Datetime(string='Order Date', required=True,
                                  default=datetime.now())
     company_id = fields.Many2one('res.company', default=lambda self: \
-                                 self.env.company)
+                                 self.env.user.company_id)
     remarks = fields.Text(string='Remarks')
     is_remarks = \
         fields.Boolean(related='company_id.remark_for_sale_order',

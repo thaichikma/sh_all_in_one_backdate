@@ -1,5 +1,7 @@
 from odoo import models, fields, api, _
 from datetime import date,datetime
+from .exceptions import AccessError, MissingError, ValidationError, UserError
+
 
 class AccountMove(models.Model):
 
@@ -16,6 +18,18 @@ class AccountMove(models.Model):
            self.is_boolean = True
         else:
             self.is_boolean = False
+
+    def button_draft(self):
+        for move in self:
+            if move in move.line_ids.mapped('full_reconcile_id.exchange_move_id'):
+                raise UserError(_('You cannot reset to draft an exchange difference journal entry.'))
+            if move.tax_cash_basis_rec_id:
+                raise UserError(_('You cannot reset to draft a tax cash basis journal entry.'))
+            # We remove all the analytics entries for this journal
+            move.mapped('line_ids.analytic_line_ids').unlink()
+
+        self.mapped('line_ids').remove_move_reconcile()
+        self.write({'state': 'draft', 'is_move_sent': False})
 
 
 class AccountMoveLine(models.Model):

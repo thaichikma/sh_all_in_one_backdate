@@ -7,7 +7,7 @@ class StockMove(models.Model):
 
     remarks_for_picking = fields.Text(string = "Remarks for picking",related="picking_id.remarks")
     is_remarks_for_picking = fields.Boolean(related="company_id.remark_for_picking",string = "Is Remarks for picking")
-    inventory_id = fields.Many2one('stock.inventory',string="inventory id")
+
     remarks_for_adjustment = fields.Text(string = "Remarks for adjustment",related="inventory_id.remarks")
     is_remarks_for_adjustment = fields.Boolean(related="company_id.remark_for_adjustment",string = "Is Remarks for adjustment")
 

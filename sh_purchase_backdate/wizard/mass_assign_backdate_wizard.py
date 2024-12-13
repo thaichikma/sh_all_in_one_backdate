@@ -10,7 +10,7 @@ class BackdateWizard(models.TransientModel):
 
     purchase_order_ids = fields.Many2many('purchase.order')
     date_planned = fields.Datetime(string = "Receipt Date",required=True,default = datetime.now())
-    company_id = fields.Many2one('res.company',default=lambda self:self.env.company)
+    company_id = fields.Many2one('res.company',default=lambda self:self.env.user.company_id)
     remarks = fields.Text(string = "Remarks")
     is_remarks = fields.Boolean(related="company_id.remark_for_purchase_order",string = "Is Remarks")
     is_remarks_mandatory = fields.Boolean(related="company_id.remark_mandatory_for_purchase_order",string = "Is remarks mandatory")

@@ -8,3 +8,6 @@ class StockMoveLine(models.Model):
 
     remarks_for_purchase = fields.Text(string = "Remarks for Purchase",related="move_id.remarks_for_purchase")
     is_remarks_for_purchase = fields.Boolean(related="company_id.remark_for_purchase_order",string = "Is Remarks for Purchase")
+    company_id = fields.Many2one('res.company', string='Company', index=True,
+                                 default=lambda self: self.env.user.company_id,
+                                 help="Company related to this journal")

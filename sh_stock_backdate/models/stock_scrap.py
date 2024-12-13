@@ -11,6 +11,9 @@ class StockScrap(models.Model):
     is_remarks = fields.Boolean(related="company_id.remark_for_scrap",string = "Is Remarks")
     is_remarks_mandatory = fields.Boolean(related="company_id.remark_mandatory_for_scrap",string = "Is remarks mandatory")
     is_boolean = fields.Boolean()
+    company_id = fields.Many2one('res.company', string='Company', index=True,
+                                 default=lambda self: self.env.user.company_id,
+                                 help="Company related to this journal")
 
     @api.onchange('date_done')
     def onchange_date_done(self):

@@ -8,7 +8,7 @@ class PickngBackdateWizard(models.TransientModel):
 
     stock_picking_ids = fields.Many2many('stock.picking',)
     scheduled_date = fields.Datetime(string = "Scheduled Date",required=True,default = datetime.now())
-    company_id = fields.Many2one('res.company',default=lambda self:self.env.company)
+    company_id = fields.Many2one('res.company',default=lambda self:self.env.user.company_id)
     remarks = fields.Text(string = "Remarks")
     is_remarks = fields.Boolean(related="company_id.remark_for_picking",string = "Is Remarks")
     is_remarks_mandatory = fields.Boolean(related="company_id.remark_mandatory_for_picking",string = "Is remarks mandatory")

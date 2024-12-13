@@ -9,7 +9,7 @@ class ScrapBackdateWizard(models.TransientModel):
 
     scrap_ids = fields.Many2many('stock.scrap',)
     date_done = fields.Datetime(string = "Date",required=True,default = datetime.now())
-    company_id = fields.Many2one('res.company',default=lambda self:self.env.company)
+    company_id = fields.Many2one('res.company',default=lambda self:self.env.user.company_id)
     remarks = fields.Text(string = "Remarks")
     is_remarks = fields.Boolean(related="company_id.remark_for_scrap",string = "Is Remarks")
     is_remarks_mandatory = fields.Boolean(related="company_id.remark_mandatory_for_scrap",string = "Is remarks mandatory")

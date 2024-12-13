@@ -8,7 +8,7 @@ class InvoiceBackdateWizard(models.TransientModel):
 
     account_move_ids = fields.Many2many('account.move')
     invoice_date = fields.Datetime(string = "Invoice Date",required=True,default = fields.Date.today)
-    company_id = fields.Many2one('res.company',default=lambda self:self.env.company)
+    company_id = fields.Many2one('res.company',default=lambda self:self.env.user.company_id)
     remarks = fields.Text(string = "Remarks")
     is_remarks = fields.Boolean(related="company_id.remark_for_move")
     is_remarks_mandatory = fields.Boolean(related="company_id.remark_mandatory_move")

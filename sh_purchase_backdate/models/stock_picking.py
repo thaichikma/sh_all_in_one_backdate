@@ -8,7 +8,7 @@ class StockPicking(models.Model):
 
     remarks_for_purchase = fields.Text(string = "Remarks for Purchase",related="purchase_id.remarks")
     is_remarks_for_purchase = fields.Boolean(related="company_id.remark_for_purchase_order",string = "Is Remarks for Purchase")
-    move_lines = fields.One2many('stock.move', 'picking_id', string="Stock Moves", copy=True)
+
     @api.depends('move_lines.state', 'move_lines.date', 'move_type')
     def _compute_scheduled_date(self):
         for picking in self:

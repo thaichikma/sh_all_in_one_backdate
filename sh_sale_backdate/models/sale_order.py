@@ -1,13 +1,15 @@
 from operator import mod
 from odoo import fields, models,_,api
 from datetime import date,datetime
-from odoo.fields import Command
 from odoo.exceptions import AccessError, UserError, ValidationError
 
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
+    company_id = fields.Many2one('res.company', string='Company', required=True, index=True,
+                                 default=lambda self: self.env.user.company_id,
+                                 help="Company related to this journal")
     remarks = fields.Text(string = "Remarks")
     is_remarks = fields.Boolean(related="company_id.remark_for_sale_order",string = "Is Remarks")
     is_remarks_mandatory = fields.Boolean(related="company_id.remark_mandatory_for_sale_order",string = "Is remarks mandatory")
@@ -40,28 +42,35 @@ class SaleOrder(models.Model):
         a clean extension chain).
         """
         self.ensure_one()
+        journal = self.env['account.move'].with_context(default_move_type='out_invoice')._get_default_journal()
+        if not journal:
+            raise UserError(_('Please define an accounting sales journal for the company %s (%s).') % (self.company_id.name, self.company_id.id))
 
-        return {
+        invoice_vals = {
             'ref': self.client_order_ref or '',
             'move_type': 'out_invoice',
             'narration': self.note,
-            'currency_id': self.currency_id.id,
+            'currency_id': self.pricelist_id.currency_id.id,
             'campaign_id': self.campaign_id.id,
             'medium_id': self.medium_id.id,
             'source_id': self.source_id.id,
+            'invoice_user_id': self.user_id and self.user_id.id,
             'team_id': self.team_id.id,
             'partner_id': self.partner_invoice_id.id,
             'partner_shipping_id': self.partner_shipping_id.id,
-            'fiscal_position_id': (self.fiscal_position_id or self.fiscal_position_id._get_fiscal_position(
-                self.partner_invoice_id)).id,
+            'fiscal_position_id': (self.fiscal_position_id or self.fiscal_position_id.get_fiscal_position(self.partner_invoice_id.id)).id,
+            'partner_bank_id': self.company_id.partner_id.bank_ids[:1].id,
+            'journal_id': journal.id,  # company comes from the journal
             'invoice_origin': self.name,
             'invoice_payment_term_id': self.payment_term_id.id,
-            'invoice_user_id': self.user_id.id,
-            'payment_reference': self.reference,
-            'transaction_ids': [Command.set(self.transaction_ids.ids)],
-            'company_id': self.company_id.id,
+            # 'payment_reference': self.reference,
+            'transaction_ids': [(6, 0, self.transaction_ids.ids)],
             'invoice_line_ids': [],
+            'company_id': self.company_id.id,
+            'invoice_date':self.date_order.date() if self.company_id.backdate_for_invoice else '',
+            'remarks_for_sale' : self.remarks if self.remarks else False
         }
+        return invoice_vals
 
 class SaleAdvancePaymentInv(models.TransientModel):
     _inherit = "sale.advance.payment.inv"
@@ -77,7 +86,7 @@ class SaleAdvancePaymentInv(models.TransientModel):
             'fiscal_position_id': (order.fiscal_position_id or order.fiscal_position_id.get_fiscal_position(order.partner_id.id)).id,
             'partner_shipping_id': order.partner_shipping_id.id,
             'currency_id': order.pricelist_id.currency_id.id,
-            'payment_reference': order.reference,
+            # 'payment_reference': order.reference,
             'invoice_payment_term_id': order.payment_term_id.id,
             'partner_bank_id': order.company_id.partner_id.bank_ids[:1].id,
             'team_id': order.team_id.id,

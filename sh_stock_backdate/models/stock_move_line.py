@@ -9,8 +9,11 @@ class StockMoveLine(models.Model):
     remarks_for_picking = fields.Text(string = "Remarks for picking",related="move_id.remarks_for_picking")
     is_remarks_for_picking = fields.Boolean(related="company_id.remark_for_picking",string = "Is Remarks for picking")
 
-    remarks_for_adjustment = fields.Text(string="Remarks for adjustment", related="move_id.remarks_for_adjustment")
+    remarks_for_adjustment = fields.Text(string = "Remarks for adjustment",related="move_id.remarks_for_adjustment")
     is_remarks_for_adjustment = fields.Boolean(related="company_id.remark_for_adjustment",string = "Is Remarks for adjustment")
 
     remarks_for_scrap = fields.Text(string = "Remarks for scrap",related="move_id.remarks_for_scrap")
     is_remarks_for_scrap = fields.Boolean(related="company_id.remark_for_scrap",string = "Is Remarks for scrap")
+    company_id = fields.Many2one('res.company', string='Company', index=True,
+                                 default=lambda self: self.env.user.company_id,
+                                 help="Company related to this journal")
